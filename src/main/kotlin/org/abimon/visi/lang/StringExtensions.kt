@@ -50,10 +50,10 @@ fun String.splitOutsideGroup(delimiter: String = "\\s+", cap: Int = 0, group: St
     val regex = "${group.start}([^${group.start}${group.end}]*)${group.end}|([^$delimiter]+)"
     val m = Pattern.compile(regex).matcher(this)
     while (m.find()) {
-        if (m.group(1) != null)
-            strings += m.group(1)
+        strings += if (m.group(1) != null)
+            m.group(1)
         else
-            strings += m.group(2)
+            m.group(2)
     }
 
     return strings.toTypedArray()
@@ -61,7 +61,7 @@ fun String.splitOutsideGroup(delimiter: String = "\\s+", cap: Int = 0, group: St
 
 operator fun String.times(num: Int): String {
     var str = ""
-    for(i in 0..num-1)
+    for(i in 0 until num)
         str += this
     return str
 }

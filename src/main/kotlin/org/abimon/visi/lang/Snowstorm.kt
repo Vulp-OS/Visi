@@ -76,19 +76,17 @@ class Snowstorm constructor(private val twepoch: Long = Snowstorm.defaultEpoch) 
         try {
             val ip = InetAddress.getLocalHost()
             val network = NetworkInterface.getByInetAddress(ip)
-            val id: Long
-            if (network == null) {
-                id = 1
+            return if (network == null) {
+                1
             } else {
                 val mac = network.hardwareAddress
 
                 if (mac == null) {
-                    id = 2
+                    2
                 } else {
-                    id = 0x000000FFL and mac[mac.size - 1].toLong() or (0x0000FF00L and (mac[mac.size - 2].toLong() shl 8)) shr 6
+                    0x000000FFL and mac[mac.size - 1].toLong() or (0x0000FF00L and (mac[mac.size - 2].toLong() shl 8)) shr 6
                 }
             }
-            return id
         } catch (e: SocketException) {
             return 0
         } catch (e: UnknownHostException) {
@@ -107,16 +105,16 @@ class Snowstorm constructor(private val twepoch: Long = Snowstorm.defaultEpoch) 
     }
 
     companion object WeatherMap {
-        private val defaultEpoch = 1288834974657L
+        private const val defaultEpoch = 1288834974657L
 
         private val snowstorms = HashMap<Long, Snowstorm>()
 
         val instance: Snowstorm
             get() = getInstance(defaultEpoch)
 
-        fun getInstance(epoch: Long): Snowstorm {
+        private fun getInstance(epoch: Long): Snowstorm {
             if (!snowstorms.containsKey(epoch))
-                snowstorms.put(epoch, Snowstorm(epoch))
+                snowstorms[epoch] = Snowstorm(epoch)
             return snowstorms[epoch]!!
         }
     }

@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
+import kotlin.system.exitProcess
 
 @Deprecated("Use the other read function instead", replaceWith = ReplaceWith("read(len)"))
 fun InputStream.readPartialBytes(len: Int): ByteArray = read(len)
@@ -87,11 +88,11 @@ fun InputStream.check(inputStream: InputStream): Boolean {
                 else if (read < 0 || secondRead < 0)
                     return false
 
-                if (!Arrays.equals(buffer, secondBuffer))
+                if (!buffer.contentEquals(secondBuffer))
                     return false
             }
 
-            return Arrays.equals(buffer, secondBuffer)
+            return buffer.contentEquals(secondBuffer)
         }
     }
 }
@@ -130,7 +131,7 @@ fun errPrintln(message: Any?) {
  */
 fun forceError(message: Any?) {
     System.err.println(message)
-    System.exit(1)
+    exitProcess(1)
 }
 
 fun question(message: Any?, answer: (String) -> Boolean): Boolean {
@@ -138,15 +139,15 @@ fun question(message: Any?, answer: (String) -> Boolean): Boolean {
     return answer(readLine() ?: "")
 }
 
-fun question(message: Any?, answer: Any?): Boolean = question(message, { input -> input == answer })
-fun question(message: Any?, answer: String): Boolean = question(message, { input -> input.equals(answer, true) })
+fun question(message: Any?, answer: Any?): Boolean = question(message) { input -> input == answer }
+fun question(message: Any?, answer: String): Boolean = question(message) { input -> input.equals(answer, true) }
 
 fun iterateAll(): List<File> {
     val executor = Executors.newFixedThreadPool(1024)
     val allFiles = ConcurrentLinkedQueue<File>()
 
-    File.listRoots().forEach { root ->
-        root.listFiles().forEach { dir ->
+    File.listRoots().forEach {
+        it.listFiles().forEach { dir ->
             executor.submit {
                 allFiles.addAll(dir.iterate(true))
             }

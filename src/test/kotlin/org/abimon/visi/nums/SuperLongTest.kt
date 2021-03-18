@@ -2,13 +2,13 @@ package org.abimon.visi.nums
 
 import org.junit.Test
 import java.math.BigInteger
-import java.util.*
+// import java.util.*
 import kotlin.system.measureTimeMillis
 
 internal class SuperLongTest {
     @Test
     fun superLong() {
-        val rng = Random()
+        // val rng = Random()
         val randomTimes = (1 until 16)//.map { rng.nextInt(Math.abs(it) + 64) }
         val starting = 128L
 

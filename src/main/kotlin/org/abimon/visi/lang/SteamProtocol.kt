@@ -5,7 +5,7 @@ import java.awt.GraphicsEnvironment
 import java.net.URI
 
 object SteamProtocol {
-    private val base = "steam://"
+    private const val base = "steam://"
 
     fun openSteam() {
         open("")
@@ -20,19 +20,19 @@ object SteamProtocol {
     }
 
     fun openStore(steamID: String) {
-        open("advertise/" + steamID)
+        open("advertise/$steamID")
     }
 
     fun acceptGift(giftPass: String) {
-        open("ackMessage/ackGuestPass/" + giftPass)
+        open("ackMessage/ackGuestPass/$giftPass")
     }
 
     fun openNews(steamID: String) {
-        open("appnews/" + steamID)
+        open("appnews/$steamID")
     }
 
     fun backup(steamID: String) {
-        open("backup/" + steamID)
+        open("backup/$steamID")
     }
 
     fun browseMedia() {
@@ -40,11 +40,11 @@ object SteamProtocol {
     }
 
     fun checkSystemRequirements(steamID: String) {
-        open("checksysreq/" + steamID)
+        open("checksysreq/$steamID")
     }
 
     fun defragApp(steamID: String) {
-        open("defrag/" + steamID)
+        open("defrag/$steamID")
     }
 
     fun openFriends() {
@@ -52,7 +52,7 @@ object SteamProtocol {
     }
 
     fun openGame(steamID: String) {
-        open("run/" + steamID)
+        open("run/$steamID")
     }
 
     private fun open(url: String) {

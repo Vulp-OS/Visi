@@ -22,7 +22,7 @@ interface DataSource {
     fun pipe(out: OutputStream): Unit = use { it.copyTo(out) }
 }
 
-class FileDataSource(val file: File) : DataSource {
+class FileDataSource(private val file: File) : DataSource {
     override val location: String = file.absolutePath
 
     override val data: ByteArray
@@ -37,7 +37,7 @@ class FileDataSource(val file: File) : DataSource {
         get() = file.length()
 }
 
-class HTTPDataSource(val url: URL, val userAgent: String) : DataSource {
+class HTTPDataSource(private val url: URL, private val userAgent: String) : DataSource {
     constructor(url: URL) : this(url, "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:44.0) Gecko/20100101 Firefox/44.0")
 
     override val location: String = url.toExternalForm()
@@ -69,8 +69,8 @@ class HTTPDataSource(val url: URL, val userAgent: String) : DataSource {
         get() = use { it.available().toLong() }
 }
 
-class FunctionalDataSource(val dataSupplier: Supplier<ByteArray>) : DataSource {
-    override val location: String = "Supplier " + dataSupplier.toString()
+class FunctionalDataSource(private val dataSupplier: Supplier<ByteArray>) : DataSource {
+    override val location: String = "Supplier $dataSupplier"
 
     override val data: ByteArray
         get() = dataSupplier.get()
@@ -112,7 +112,7 @@ class ByteArrayDataSource(override val data: ByteArray): DataSource {
 }
 
 /** One time use */
-class InputStreamDataSource(val stream: InputStream) : DataSource {
+class InputStreamDataSource(private val stream: InputStream) : DataSource {
     override val location: String = stream.toString()
 
     override val data: ByteArray

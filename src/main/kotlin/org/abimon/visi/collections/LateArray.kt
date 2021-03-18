@@ -2,7 +2,7 @@ package org.abimon.visi.collections
 
 class LateArray<T : Any> constructor(private val backing: Array<T?>, override val size: Int): List<T> {
     companion object {
-        inline operator fun <reified T : Any> invoke(size: Int): LateArray<T> = LateArray(Array(size, { null as T? }), size)
+        inline operator fun <reified T : Any> invoke(size: Int): LateArray<T> = LateArray(Array(size) { null as T? }, size)
     }
 
     override fun contains(element: T): Boolean = element in backing

@@ -41,7 +41,6 @@ fun BufferedImage.toByteArray(format: String = "PNG"): ByteArray {
 fun BufferedImage.toInputStream(): InputStream = ByteArrayInputStream(toByteArray())
 
 fun InputStream.toBufferedImage(): BufferedImage {
-    val img = ImageIO.read(this)
-    return img
+    return ImageIO.read(this)
 }
 fun ByteArray.toBufferedImage(): BufferedImage = ByteArrayInputStream(this).toBufferedImage()

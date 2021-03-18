@@ -4,7 +4,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
-class Pool<T>(val poolSize: Int = -1) {
+class Pool<T>(private val poolSize: Int = -1) {
     private val poolables: MutableList<Poolable<T>> = ArrayList()
 
     /**
@@ -18,7 +18,7 @@ class Pool<T>(val poolSize: Int = -1) {
     /**
      * Waits for a [Poolable] instance to become free, and then returns it. Throws a [TimeOutException]
      */
-    fun getOrWait(wait: Long, unit: TimeUnit): Poolable<T> {
+    private fun getOrWait(wait: Long, unit: TimeUnit): Poolable<T> {
         var passedMilli = 0L
         val waitingMilli = unit.toMillis(wait)
         while(passedMilli < waitingMilli) {
@@ -34,7 +34,7 @@ class Pool<T>(val poolSize: Int = -1) {
     /**
      * Get the first available [Poolable] instance which matches [matches], or null if none of the instances are free that match
      */
-    fun getWhich(matches: (T) -> Boolean): Poolable<T>? {
+    private fun getWhich(matches: (T) -> Boolean): Poolable<T>? {
         synchronized(poolables) {
             return poolables.filter { poolable -> matches(poolable()) }.firstOrNull(Poolable<T>::isFree)
         }
@@ -55,7 +55,7 @@ class Pool<T>(val poolSize: Int = -1) {
         throw TimeoutException("No Poolable instances free, waited ${unit.convert(passedMilli, TimeUnit.MILLISECONDS)} ${unit.name.capitalize()}")
     }
 
-    fun getFirst(sort: (T, T) -> Int): Poolable<T>? {
+    private fun getFirst(sort: (T, T) -> Int): Poolable<T>? {
         synchronized(poolables) {
             return poolables.filter(Poolable<T>::isFree).sortedWith(Comparator { one, two -> sort(one(), two())}).firstOrNull()
         }
@@ -127,8 +127,8 @@ interface Poolable<out T> {
     operator fun invoke(): T = get()
 }
 
-class PoolableObject<out T>(val obj: T) : Poolable<T> {
-    var inUse = false
+class PoolableObject<out T>(private val obj: T) : Poolable<T> {
+    private var inUse = false
 
     override fun get(): T = synchronized(obj as Any) { obj }
 

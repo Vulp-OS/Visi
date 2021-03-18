@@ -1,15 +1,16 @@
 package org.abimon.visi.nums
 
-import java.util.*
+// import java.util.*
+import kotlin.math.pow
 
 /** Represents numbers between -2^127 to 2^127-1 */
 class SuperLong() : SuperNumber() {
     companion object {
-        val NUM_BITS = 128
-        val RANGE = (0 until NUM_BITS)
+        const val NUM_BITS = 128
+        private val RANGE = (0 until NUM_BITS)
         val TWOS_RANGE = (1 until NUM_BITS)
 
-        val LOOKUP = RANGE.reversed().map { index -> Math.pow(2.0, index.toDouble()).toLong() }.toLongArray()
+        val LOOKUP = RANGE.reversed().map { index -> 2.0.pow(index.toDouble()).toLong() }.toLongArray()
 
         val MIN_VALUE = SuperLong(RANGE.map { index -> index == 0 }.toBooleanArray())
         val MAX_VALUE = SuperLong(RANGE.map { index -> index != 0 }.toBooleanArray())
@@ -25,7 +26,7 @@ class SuperLong() : SuperNumber() {
         }
 
         private fun abs(num: BooleanArray): BooleanArray {
-            val abs = Arrays.copyOf(num, num.size)
+            val abs = num.copyOf(num.size)
             if (abs[0]) {
                 abs.forEachIndexed { index, bit -> abs[index] = !bit }
 
@@ -165,7 +166,7 @@ class SuperLong() : SuperNumber() {
         System.arraycopy(pad(arr), 0, num, 0, NUM_BITS)
     }
 
-    val num = BooleanArray(NUM_BITS)
+    private val num = BooleanArray(NUM_BITS)
 
     override fun toByte(): Byte = toLong().toByte()
     override fun toChar(): Char = toLong().toChar()
@@ -183,51 +184,51 @@ class SuperLong() : SuperNumber() {
     override fun toDouble(): Double = toLong().toDouble()
     override fun toFloat(): Float = toLong().toFloat()
 
-    override fun twosCompliment(): BooleanArray = Arrays.copyOf(num, NUM_BITS)
-    override fun copy(): SuperLong = SuperLong(Arrays.copyOf(num, NUM_BITS))
+    override fun twosCompliment(): BooleanArray = num.copyOf(NUM_BITS)
+    override fun copy(): SuperLong = SuperLong(num.copyOf(NUM_BITS))
 
     override operator fun plus(add: Number): SuperLong {
         val adding = pad(twosCompliment(add))
-        val newNum = Arrays.copyOf(num, NUM_BITS)
+        val newNum = num.copyOf(NUM_BITS)
         add(newNum, adding)
         return SuperLong(newNum)
     }
 
     override operator fun minus(minus: Number): SuperLong {
         val subbing = pad(twosCompliment(minus))
-        val newNum = Arrays.copyOf(num, NUM_BITS)
+        val newNum = num.copyOf(NUM_BITS)
         sub(newNum, subbing)
         return SuperLong(newNum)
     }
 
     override operator fun times(times: Number): SuperLong {
         val timesing = pad(twosCompliment(times))
-        val newNum = Arrays.copyOf(num, NUM_BITS)
+        val newNum = num.copyOf(NUM_BITS)
         multiply(newNum, timesing)
         return SuperLong(newNum)
     }
 
     override fun div(radix: Number): SuperLong {
         val radixArray = pad(twosCompliment(radix))
-        val newNum = Arrays.copyOf(num, NUM_BITS)
+        val newNum = num.copyOf(NUM_BITS)
         return SuperLong(div(newNum, radixArray).first)
     }
 
     override fun rem(radix: Number): SuperLong {
         val radixArray = pad(twosCompliment(radix))
-        val newNum = Arrays.copyOf(num, NUM_BITS)
+        val newNum = num.copyOf(NUM_BITS)
         return SuperLong(div(newNum, radixArray).second)
     }
 
     infix fun pow(power: Number): SuperLong {
         val num = twosCompliment()
         val original = twosCompliment()
-        (SuperLong(0) until SuperLong(power) - 1).forEach { multiply(num, original) }
+        (SuperLong(0) until SuperLong(power) - 1).forEach { _ -> multiply(num, original) }
         return SuperLong(num)
     }
 
     override fun unaryMinus(): SuperLong {
-        val arr = Arrays.copyOf(num, NUM_BITS)
+        val arr = num.copyOf(NUM_BITS)
 
         if (num.all { !it })
             return SuperLong(arr)
@@ -245,15 +246,15 @@ class SuperLong() : SuperNumber() {
 
     //-1 if this is smaller, 0 if equal, 1 if this is bigger
     override fun compareTo(other: Number): Int {
-        val otherNum = pad(SuperNumber.twosCompliment(other))
+        val otherNum = pad(twosCompliment(other))
         return compare(num, otherNum)
     }
 
     override fun equals(other: Any?): Boolean {
         if((other ?: return false) is SuperNumber)
-            return Arrays.equals(twosCompliment(), (other as SuperNumber).twosCompliment())
+            return twosCompliment().contentEquals((other as SuperNumber).twosCompliment())
         return false
     }
 
-    override fun hashCode(): Int = Arrays.hashCode(num)
+    override fun hashCode(): Int = num.contentHashCode()
 }

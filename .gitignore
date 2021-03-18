@@ -11,7 +11,12 @@ hs_err_pid*
 
 .idea/
 Visi.iml
-out/
+/out/
 LineOfBees.png
 /org/abimon/visi/NHM.kt
-target/
+/target/
+/.gradle/
+/build/
+/gradle/
+gradlew
+gradlew.bat

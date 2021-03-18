@@ -4,7 +4,7 @@ import org.abimon.visi.collections.ArraySet
 
 fun Runtime.usedMemory(): Long = (totalMemory() - freeMemory())
 
-fun setHeadless() = System.setProperty("java.awt.headless", "true")
+fun setHeadless(): String = System.setProperty("java.awt.headless", "true")
 
 //val String.variations: Set<String>
 //    get() {

@@ -4,7 +4,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSuperclassOf
 
-fun <T: Enum<*>> KClass<T>.isValue(name: String): Boolean = java.enumConstants.map { enum -> enum.name }.any { enumName -> enumName.toUpperCase() == name.toUpperCase()}
+fun <T: Enum<*>> KClass<T>.isValue(name: String): Boolean = java.enumConstants.map { enum -> enum.name }.any { enumName -> enumName.equals(name, ignoreCase = true) }
 
 fun <T: Any> KClass<T>.build(): ClassBuilder<T> = ClassBuilder(this)
 

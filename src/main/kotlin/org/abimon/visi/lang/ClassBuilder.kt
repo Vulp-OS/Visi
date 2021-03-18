@@ -25,7 +25,7 @@ open class ClassBuilder<T: Any>(val constructor: KFunction<T>) {
             throw IllegalArgumentException("$value is an invalid value for $parameterName (Expected ${parameter.type.classifier}, was given ${value::class})")
     }
 
-    fun build(): T {
+    private fun build(): T {
         if(parameters.filter { (key) -> !key.isOptional && !key.type.isMarkedNullable }.any { (_, value) -> value == null })
             throw IllegalStateException("Not all required parameters have associated values! Still missing ${parameters.keys.filter { key -> !key.isOptional }.joinToString()}")
         return constructor.callBy(parameters.filter { (key, value) -> !(!key.type.isMarkedNullable && value == null) })

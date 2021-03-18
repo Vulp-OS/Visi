@@ -24,13 +24,13 @@ fun <T, V> Map<Pair<T, T>, V>.getFirst(t: T): V? {
     return get(keys.firstOrNull { pair -> pair.first == t || pair.second == t } ?: return null)
 }
 fun <T, V> Map<Pair<T, T>, V>.getPair(t: T): Pair<T, T>? {
-    return (keys.firstOrNull { pair -> pair.first == t || pair.second == t } ?: return null)
+    return (keys.firstOrNull { pair -> pair.first == t || pair.second == t })
 }
 fun <T, V> Map<Pair<T, T>, V>.getOther(t: T): T? {
     return (keys.firstOrNull { pair -> pair.first == t } ?: return (keys.firstOrNull { pair -> pair.second == t } ?: return null).first).second
 }
 
-fun <T, V> Map<T, V>.getForValue(v: V): T? = keys.filter { key -> get(key) == v }.firstOrNull()
+fun <T, V> Map<T, V>.getForValue(v: V): T? = keys.firstOrNull { key -> get(key) == v }
 
 fun <T> List<T>.shuffle(): List<T> {
     val list = ArrayList<T>()
@@ -114,43 +114,45 @@ fun <T> Iterable<T>.pass(passing: (T, T) -> T): T {
 
 fun <T> Collection<T>.joinToPrefixedString(separator: String, elementPrefix: String = "", elementSuffix: String = "", transform: T.() -> String = { this.toString() }) = joinToString(separator) { element -> "$elementPrefix${element.transform()}$elementSuffix"}
 
-fun ByteArray.toArrayString(): String = Arrays.toString(this)
-fun BooleanArray.toArrayString(): String = Arrays.toString(this)
+fun ByteArray.toArrayString(): String = this.contentToString()
+fun BooleanArray.toArrayString(): String = this.contentToString()
 
-fun Array<*>.toArrayString(): String = Arrays.toString(this)
+fun Array<*>.toArrayString(): String = this.contentToString()
 
 fun IntArray.copyFrom(index: Int): IntArray = copyOfRange(index, size)
 fun <T> Array<T>.copyFrom(index: Int): Array<T> = copyOfRange(index, size)
 
 fun <T> List<T>.toSequentialString(separator: String = ", ", finalSeparator: String = ", and ", transform: T.() -> String = { this.toString() }): String {
-    if(size == 0)
-        return ""
-    else if(size == 1)
-        return this[0].transform()
-    else if(size == 2)
-        return this[0].transform() + finalSeparator + this[1].transform()
+    return when (size) {
+        0 -> ""
+        1 -> this[0].transform()
+        2 -> this[0].transform() + finalSeparator + this[1].transform()
+        else -> {
+            var str = ""
+            for (i in 0 until size - 2)
+                str += this[i].transform() + separator
+            str += this[size - 2].transform() + finalSeparator
+            str += this[size - 1].transform()
+            str
+        }
+    }
 
-    var str = ""
-    for(i in 0 until size - 2)
-        str += this[i].transform() + separator
-    str += this[size - 2].transform() + finalSeparator
-    str += this[size - 1].transform()
-    return str
 }
 fun <T> Array<T>.toSequentialString(separator: String = ", ", finalSeparator: String = ", and ", transform: T.() -> String = { this.toString() }): String {
-    if(size == 0)
-        return ""
-    else if(size == 1)
-        return this[0].transform()
-    else if(size == 2)
-        return this[0].transform() + finalSeparator + this[1].transform()
+    return when (size) {
+        0 -> ""
+        1 -> this[0].transform()
+        2 -> this[0].transform() + finalSeparator + this[1].transform()
+        else -> {
+            var str = ""
+            for (i in 0 until size - 2)
+                str += this[i].transform() + separator
+            str += this[size - 2].transform() + finalSeparator
+            str += this[size - 1].transform()
+            str
+        }
+    }
 
-    var str = ""
-    for(i in 0 until size - 2)
-        str += this[i].transform() + separator
-    str += this[size - 2].transform() + finalSeparator
-    str += this[size - 1].transform()
-    return str
 }
 
 infix fun ByteArray.asBase(base: Int): String = this.joinToString(" ") { byte ->
